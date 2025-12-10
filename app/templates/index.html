@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>GPT-2 Text Generator Fine Tuning</title>
+    <link rel="stylesheet" href="{{ url_for('main.static', filename='css/style.css') }}">
+    <style>
+      /* small inline helper so UI looks reasonable even without your CSS */
+      .hidden { display: none; }
+      .grid-2, .grid-3 { display: grid; gap: 8px; }
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+      .label { display:block; margin-top:8px; font-weight:600; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h1 class="title">GPT-2 Text Generator Fine Tuning</h1>
+
+        <form method="POST" class="form-box" id="genForm">
+
+            <label class="label">Enter Prompt</label>
+            <textarea name="prompt" class="textarea" placeholder="Write something..." required></textarea>
+
+            <label class="label">Generation Method</label>
+            <select name="method" class="select" id="methodSelect">
+                <option value="greedy">Greedy</option>
+                <option value="beam">Beam Search</option>
+                <option value="top_k">Top-K Sampling</option>
+                <option value="top_p">Top-P Sampling</option>
+            </select>
+
+            <div class="grid-2">
+                <div>
+                    <label class="label">Max Length</label>
+                    <input type="number" name="max_length" value="100" class="input" min="1" max="1024">
+                </div>
+
+                <div>
+                    <label class="label">Return Sequences</label>
+                    <input type="number" name="num_return_sequences" value="1" class="input" min="1" max="10">
+                </div>
+            </div>
+
+            <div class="grid-3 sampling-fields hidden" id="samplingFields">
+                <div>
+                    <label class="label">Top-K</label>
+                    <input type="number" name="top_k" value="50" class="input" min="0">
+                </div>
+
+                <div>
+                    <label class="label">Top-P</label>
+                    <input type="text" name="top_p" value="0.9" class="input">
+                </div>
+
+                <div>
+                    <label class="label">Temperature</label>
+                    <input type="text" name="temperature" value="1.0" class="input">
+                </div>
+            </div>
+
+            <div class="beam-fields" id="beamFields">
+                <label class="label">Beam Count</label>
+                <input type="number" name="num_beams" value="5" class="input" min="1">
+            </div>
+
+            <button type="submit" class="btn">Generate</button>
+        </form>
+
+        {% if output %}
+            <div class="output-box">
+                <h2 class="output-title">Generated Text</h2>
+                <p class="output-text">{{ output|safe }}</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+  // small JS to show/hide fields depending on chosen method
+  const methodSelect = document.getElementById('methodSelect');
+  const samplingFields = document.getElementById('samplingFields');
+  const beamFields = document.getElementById('beamFields');
+
+  function updateUI() {
+    const method = methodSelect.value;
+    if (method === 'top_k' || method === 'top_p') {
+      samplingFields.classList.remove('hidden');
+      beamFields.classList.add('hidden'); // sampling methods typically don't use beam
+    } else if (method === 'beam') {
+      samplingFields.classList.add('hidden');
+      beamFields.classList.remove('hidden');
+    } else { // greedy
+      samplingFields.classList.add('hidden');
+      beamFields.classList.add('hidden');
+    }
+  }
+
+  methodSelect.addEventListener('change', updateUI);
+  // initialize on load (in case form is re-rendered with result)
+  updateUI();
+</script>
+
+</body>
+</html>

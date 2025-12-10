@@ -1,0 +1,15 @@
+
+flask>=2.3.3
+torch>=2.7.1
+transformers>=4.45.2
+datasets
+gunicorn
+Werkzeug>=2.3.7
+
+# python 3.11.14
+
+# docker build -t ruhulcom553/gpt2-generator .
+# docker login
+# docker push ruhulcom553/gpt2-generator
+# docker run -p 8000:8000 ruhulcom553/gpt2-generator
+# http://localhost:8000

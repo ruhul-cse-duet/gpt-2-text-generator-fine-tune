@@ -1,0 +1,13 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<h3>Prompt</h3>
+<p>{{ prompt }}</p>
+<h3>Method: {{ method }}</h3>
+{% for out in outputs %}
+  <div class="output">
+    <pre>{{ out }}</pre>
+  </div>
+{% endfor %}
+<a href="{{ url_for('main.index') }}">Back</a>
+{% endblock %}
